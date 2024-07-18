@@ -22,6 +22,7 @@
             tools:visibility="visible"
             android:visibility="invisible" />
         <View
+            android:visibility="gone"
             android:layout_weight="1"
             android:background="#ff0000"
             android:layout_width="match_parent"
