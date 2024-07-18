@@ -47,7 +47,7 @@
         <!--                android:resource="@xml/path_provider_paths" />-->
         <!--        </provider>-->
         <activity
-            android:name=".camera.CameraActivity"
+            android:name="com.billiecamera.camera.CameraActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Billie"
