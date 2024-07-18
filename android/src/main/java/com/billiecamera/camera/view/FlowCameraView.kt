@@ -390,7 +390,8 @@ data class ResModel(
     // video first frame
     var thumbUrl:String? = null,
 
-    var duration:Long? = null) {
+    var duration:Long? = null
+) {
 
     fun isVideo():Boolean {
         return contentType?.contains("video") == true
