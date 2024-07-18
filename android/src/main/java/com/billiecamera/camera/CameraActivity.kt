@@ -75,6 +75,7 @@ class CameraActivity  : AppCompatActivity() {
         fun startCamera(context:Activity, videoEnable:Int, callBack:((res:String)->Unit)) {
             println("open the camera open the camera open the camera3333")
             if(hasOpenCamera) {
+                callBack.invoke("")
                 return
             }
             try {
@@ -88,6 +89,7 @@ class CameraActivity  : AppCompatActivity() {
             } catch (e:Throwable) {
                 e.printStackTrace()
                 hasOpenCamera = false
+                callBack.invoke("")
             }
         }
     }
