@@ -6,7 +6,7 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
-const BillieCamera = NativeModules.BillieCamera
+const BillieCamera = NativeModules.BillieCamera2
   ? NativeModules.BillieCamera2
   : new Proxy(
       {},
