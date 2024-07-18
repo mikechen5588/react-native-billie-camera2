@@ -18,7 +18,9 @@ const BillieCamera = NativeModules.BillieCamera
     );
 
     export async function startCamera(enableVideo: number): Promise<MediaModel> {
+      console.log("startCamerastartCamerastartCamera111" + BillieCamera.startCamera)
       let result = await BillieCamera.startCamera(enableVideo);
+      console.log("startCamerastartCamerastartCamera111 = " + result)
       return JSON.parse(result) as MediaModel;
     }
     

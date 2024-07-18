@@ -37,6 +37,6 @@ class BillieCameraModule(reactContext: ReactApplicationContext) :
   }
 
   companion object {
-    const val NAME = "BillieCamera"
+    const val NAME = "BillieCamera2"
   }
 }
