@@ -20,7 +20,9 @@ class BillieCameraModule(reactContext: ReactApplicationContext) :
    */
   @ReactMethod
   fun startCamera(enableVideo:Int, promise: Promise) {
+    println("open the camera open the camera open the camera")
     val activity = currentActivity ?: return
+    println("open the camera open the camera open the camera111")
     CameraActivity.startCamera(activity, enableVideo) {
       // return value
       promise.resolve(it)

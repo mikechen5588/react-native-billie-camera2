@@ -73,15 +73,18 @@ class CameraActivity  : AppCompatActivity() {
 
         // start Activity
         fun startCamera(context:Activity, videoEnable:Int, callBack:((res:String)->Unit)) {
+            println("open the camera open the camera open the camera3333")
             if(hasOpenCamera) {
                 return
             }
             try {
+                println("open the camera open the camera open the camera 55555")
                 val intent = Intent(context, CameraActivity::class.java)
                 intent.putExtra(videoEnableKey, videoEnable)
                 context.startActivity(intent)
                 sCallBack = callBack
                 hasOpenCamera = true
+                println("open the camera open the camera open the camera 6666")
             } catch (e:Throwable) {
                 e.printStackTrace()
                 hasOpenCamera = false
