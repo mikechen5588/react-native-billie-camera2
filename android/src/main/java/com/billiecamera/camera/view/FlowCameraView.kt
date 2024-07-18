@@ -158,25 +158,38 @@ class FlowCameraView : FrameLayout {
             binding.imageFlash.visibility = View.GONE
 
             val cameraMgr = getCameraMgr() ?: return
+            // the angle of the moblie
+            val takePictureAngle = helper?.rawOrientation ?: 0
             cameraMgr.takePicture {
                 binding.captureLayout.post {
                     binding.captureLayout.postDelayed({
                         getCameraMgr()?.closeCamera()
                     }, 500)
 
-                    deleteDeprecateFiles()
-                    // Create output file to hold the image
-                    val photoFile = FileUtils.saveBitmap(context, it)
-                    resModel.uri = photoFile?.absolutePath
-                    resModel.contentType = "image"
-                    resModel.width = it.width
-                    resModel.height = it.height
+                    getActivity()?.lifecycleScope?.launch {
+                        deleteDeprecateFiles()
+                        // 手机角度翻转，需要旋转图片
+                        val photoFile:File? = if(takePictureAngle == 90 || takePictureAngle == 270) {
+                            // 图片翻转
+                            val rotationResult = FileUtils.rotateImage(context, it, takePictureAngle)
+                            binding.imagePhoto.setImageBitmap(rotationResult?.bitmap ?: it)
+                            rotationResult?.file
+                        } else {
+                            // Create output file to hold the image
+                            binding.imagePhoto.setImageBitmap(it)
+                            FileUtils.saveBitmap(context, it);
+                        }
 
-                    binding.videoPreview.visibility = View.GONE
-                    binding.imagePhoto.visibility = View.VISIBLE
-                    binding.imagePhoto.setImageBitmap(it)
+                        resModel.uri = photoFile?.absolutePath
+                        resModel.contentType = "image"
+                        resModel.width = it.width
+                        resModel.height = it.height
 
-                    binding.captureLayout.startTypeBtnAnimator()
+                        binding.videoPreview.visibility = View.GONE
+                        binding.imagePhoto.visibility = View.VISIBLE
+
+                        binding.captureLayout.startTypeBtnAnimator()
+                    }
                 }
             }
         }

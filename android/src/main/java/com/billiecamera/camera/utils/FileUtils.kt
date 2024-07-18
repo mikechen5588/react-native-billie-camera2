@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.media.MediaMetadataRetriever
 import android.media.MediaScannerConnection
 import android.net.Uri
@@ -153,4 +154,25 @@ object FileUtils {
         resModel.height = onlyBoundsOptions.outHeight
         resModel.contentType = "image"
     }
+
+    fun rotateImage(context: Context, img:Bitmap?, mobileAngle:Int):RotateResult? {
+        img ?: return null
+        val matrix = Matrix()
+        if(mobileAngle == 270) {
+            matrix.postRotate(-90.0f)
+        } else if(mobileAngle == 90) {
+            matrix.postRotate(90.0f)
+        }
+        val width: Int = img.getWidth()
+        val height: Int = img.getHeight()
+        val result = Bitmap.createBitmap(img, 0, 0, width, height, matrix, true)
+
+        img.recycle()
+
+        val saveResult = saveBitmap(context, result, false);
+
+        return RotateResult(saveResult, result)
+    }
 }
+
+class RotateResult(var file:File?, var bitmap:Bitmap?)
