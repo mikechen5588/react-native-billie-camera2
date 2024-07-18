@@ -267,7 +267,7 @@ class CameraActivity  : AppCompatActivity() {
                 FileUtils.getImageInfo(this@CameraActivity, resModel!!, resultIntent?.data)
             }
             Toast.makeText(this@CameraActivity,
-                "type = ${result.data?.type}, uri = ${resModel?.uri}", Toast.LENGTH_LONG).show()
+                "type = ${result.data?.type}, uri = ${result?.data?.data}", Toast.LENGTH_LONG).show()
             // select null file
             if(resModel?.uri == null) {
                 return@launch

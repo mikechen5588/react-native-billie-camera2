@@ -5,12 +5,16 @@ import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.media.ExifInterface
 import android.media.MediaMetadataRetriever
 import android.media.MediaScannerConnection
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import android.webkit.MimeTypeMap
+import androidx.core.net.toFile
+import androidx.core.net.toUri
 import com.billiecamera.camera.view.ResModel
 import java.io.File
 import java.io.FileOutputStream
@@ -110,48 +114,63 @@ object FileUtils {
     fun getMediaInfo(context: Context, resModel:ResModel, it: Uri?) {
         it ?: return
         val retriever = MediaMetadataRetriever()
-        retriever.setDataSource(context, it)
-        // 获取视频时长，单位：毫秒(ms)
-        val durationString = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-        resModel.duration = durationString?.toLong()
-
-        //获取视频宽度（单位：px）
-        val widthString = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
-        resModel.width = widthString?.toInt()
-
-        //获取视频高度（单位：px）
-        val heightString = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
-        resModel.height = heightString?.toInt()
-
-        //获取帧
-        val bitmap = retriever.frameAtTime
-        if(bitmap != null) {
-            resModel.thumbUrl = saveBitmap(context, bitmap)?.toString()
-        }
-    }
-
-    fun getImageInfo(context: Context, resModel: ResModel, it:Uri?) {
-        it ?: return
-
-        val onlyBoundsOptions = BitmapFactory.Options()
-        val input: InputStream = context.contentResolver.openInputStream(it) ?: return
 
         try {
-            onlyBoundsOptions.inJustDecodeBounds = true
-            BitmapFactory.decodeStream(input, null, onlyBoundsOptions)
+            retriever.setDataSource(context, it)
+            // 获取视频时长，单位：毫秒(ms)
+            val durationString = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+            resModel.duration = durationString?.toLong()
+
+            //获取视频宽度（单位：px）
+            val widthString = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
+            resModel.width = widthString?.toInt()
+
+            //获取视频高度（单位：px）
+            val heightString = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+            resModel.height = heightString?.toInt()
+
+            //获取帧
+            val bitmap = retriever.frameAtTime
+            if(bitmap != null) {
+                resModel.thumbUrl = saveBitmap(context, bitmap)?.toString()
+            }
         } catch (e:Throwable) {
             e.printStackTrace()
-        } finally {
             try {
-                input.close()
+                retriever.close()
             } catch (e:Throwable) {
                 e.printStackTrace()
             }
         }
+        retriever.close()
+    }
+
+
+    fun getImageInfo(context: Context, resModel: ResModel, it:Uri?) {
+        it ?: return
+
+        // previous step get size <= 0
+        if((resModel.width ?: 0) <= 0 && ((resModel.height ?: 0) <= 0)) {
+            val onlyBoundsOptions = BitmapFactory.Options()
+            val input: InputStream? = context.contentResolver.openInputStream(it)
+            try {
+                onlyBoundsOptions.inJustDecodeBounds = true
+                BitmapFactory.decodeStream(input, null, onlyBoundsOptions)
+
+                resModel.width = onlyBoundsOptions.outWidth
+                resModel.height = onlyBoundsOptions.outHeight
+            } catch (e:Throwable) {
+                e.printStackTrace()
+            } finally {
+                try {
+                    input?.close()
+                } catch (e:Throwable) {
+                    e.printStackTrace()
+                }
+            }
+        }
 
         resModel.uri = it.toString()
-        resModel.width = onlyBoundsOptions.outWidth
-        resModel.height = onlyBoundsOptions.outHeight
         resModel.contentType = "image"
     }
 
