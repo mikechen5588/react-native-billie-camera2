@@ -157,7 +157,7 @@ object FileUtils {
             resModel.width = onlyBoundsOptions.outWidth
             resModel.height = onlyBoundsOptions.outHeight
 
-            resModel.uri = saveBitmap(context, resultBitmap!!, true)?.absolutePath
+            resModel.uri = saveBitmap(context, resultBitmap!!, true)?.toUri().toString()
         } catch (e:Throwable) {
             e.printStackTrace()
         } finally {

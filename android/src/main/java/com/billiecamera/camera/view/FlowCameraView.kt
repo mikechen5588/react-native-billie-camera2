@@ -180,7 +180,7 @@ class FlowCameraView : FrameLayout {
                             FileUtils.saveBitmap(context, it);
                         }
 
-                        resModel.uri = photoFile?.absolutePath
+                        resModel.uri = photoFile?.toUri()?.toString()
                         resModel.contentType = "image"
                         resModel.width = it.width
                         resModel.height = it.height
@@ -207,7 +207,7 @@ class FlowCameraView : FrameLayout {
 
             deleteDeprecateFiles()
             getCameraMgr()?.startRecord {
-                resModel.uri = it?.absolutePath
+                resModel.uri = it?.toUri().toString()
                 resModel.contentType = "video"
                 startVideoPlayInit(it?.toUri())
 
