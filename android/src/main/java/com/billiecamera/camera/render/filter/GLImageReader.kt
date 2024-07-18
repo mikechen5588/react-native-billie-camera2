@@ -108,7 +108,7 @@ class GLImageReader(context: Context, val mListener: ImageReceiveListener) : Bas
             val bitmap = Bitmap.createBitmap(
                 pixelData,
                 width, height,
-                Bitmap.Config.ARGB_8888
+                Bitmap.Config.RGB_565
             )
 //            val bitmap = Bitmap.createBitmap(
 //                width, height,

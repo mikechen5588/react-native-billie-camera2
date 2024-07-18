@@ -256,7 +256,7 @@ class CameraActivity  : AppCompatActivity() {
         if (result.resultCode != Activity.RESULT_OK) {
             return@registerForActivityResult
         }
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             val resultIntent = result.data
             resModel = ResModel()
             if(result.data?.type?.contains("video") == true) {
@@ -266,8 +266,17 @@ class CameraActivity  : AppCompatActivity() {
                 // read picture info
                 FileUtils.getImageInfo(this@CameraActivity, resModel!!, resultIntent?.data)
             }
-            Toast.makeText(this@CameraActivity,
-                "type = ${result.data?.type}, uri = ${result?.data?.data}", Toast.LENGTH_LONG).show()
+
+            // 显示toast
+            if(resModel?.uri == null) {
+                launch(Dispatchers.Main) {
+                    Toast.makeText(this@CameraActivity,
+                        "type = ${result.data?.type}, uri = ${result.data?.data}", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            println("resModel = " + resModel?.uri)
+
             // select null file
             if(resModel?.uri == null) {
                 return@launch

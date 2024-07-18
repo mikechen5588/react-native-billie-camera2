@@ -96,14 +96,13 @@ object FileUtils {
         return null
     }
 
-    fun getFile(context: Context): File {
-        val appContext = context.applicationContext
-        val mediaDir = appContext.externalCacheDir?.let {
+    private fun getFile(context: Context): File {
+        val mediaDir = context.cacheDir?.let {
             File(it, System.currentTimeMillis().toString()).apply { mkdirs() }
         }
 
         val baseFolder = if (mediaDir != null && mediaDir.exists())
-            mediaDir else appContext.filesDir
+            mediaDir else context.filesDir
 
         return File(
             baseFolder, SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.CHINA)
@@ -150,27 +149,28 @@ object FileUtils {
         it ?: return
 
         // previous step get size <= 0
-        if((resModel.width ?: 0) <= 0 && ((resModel.height ?: 0) <= 0)) {
-            val onlyBoundsOptions = BitmapFactory.Options()
-            val input: InputStream? = context.contentResolver.openInputStream(it)
-            try {
-                onlyBoundsOptions.inJustDecodeBounds = true
-                BitmapFactory.decodeStream(input, null, onlyBoundsOptions)
+        val onlyBoundsOptions = BitmapFactory.Options()
+        val input: InputStream? = context.contentResolver.openInputStream(it)
+        try {
+            val resultBitmap = BitmapFactory.decodeStream(input, null, onlyBoundsOptions)
 
-                resModel.width = onlyBoundsOptions.outWidth
-                resModel.height = onlyBoundsOptions.outHeight
+            resModel.width = onlyBoundsOptions.outWidth
+            resModel.height = onlyBoundsOptions.outHeight
+
+            resModel.uri = saveBitmap(context, resultBitmap!!, true)?.absolutePath
+        } catch (e:Throwable) {
+            e.printStackTrace()
+        } finally {
+            try {
+                input?.close()
             } catch (e:Throwable) {
                 e.printStackTrace()
-            } finally {
-                try {
-                    input?.close()
-                } catch (e:Throwable) {
-                    e.printStackTrace()
-                }
             }
         }
 
-        resModel.uri = it.toString()
+        if(resModel.uri == null) {
+            resModel.uri = it.toString()
+        }
         resModel.contentType = "image"
     }
 
