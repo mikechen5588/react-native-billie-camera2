@@ -10,7 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.billiecamera.R
-import com.billiecamera.camera.utils.ImagePickHandler
+import com.billiecamera.camera.handler.ImagePickHandler
 import com.billiecamera.camera.listener.ClickListener
 import com.billiecamera.camera.listener.FlowCameraListener
 import com.billiecamera.camera.view.ButtonState

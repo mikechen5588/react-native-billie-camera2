@@ -1,4 +1,4 @@
-package com.billiecamera.camera.utils
+package com.billiecamera.camera.handler
 
 import android.app.Activity
 import android.content.ComponentName

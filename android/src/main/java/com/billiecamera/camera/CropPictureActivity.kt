@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.billiecamera.camera.utils.ImageCropHandler
+import com.billiecamera.camera.handler.ImageCropHandler
 import com.billiecamera.camera.utils.CapturePhotoUtils
 import com.billiecamera.camera.view.ResModel
 import com.google.gson.Gson

@@ -1,4 +1,4 @@
-package com.billiecamera.camera.utils
+package com.billiecamera.camera.handler
 
 import android.app.Activity
 import android.content.Intent
@@ -8,6 +8,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.billiecamera.camera.utils.FileUtils
 import com.billiecamera.camera.view.CaptureButton
 import com.billiecamera.camera.view.ResModel
 import com.hjq.permissions.OnPermissionCallback
