@@ -24,6 +24,14 @@ const BillieCamera = NativeModules.BillieCamera2
       return JSON.parse(result) as MediaModel;
     }
     
+
+    export async function chooseAvatar(width:number, height:number): Promise<MediaModel> {
+      console.log("startCamerastartCamerastartCamera111" + BillieCamera.startCamera)
+      let result = await BillieCamera.chooseAvatar(width, height);
+      console.log("startCamerastartCamerastartCamera111 = " + result)
+      return JSON.parse(result) as MediaModel;
+    }
+    
     
     export type MediaModel = {
       uri: string,
