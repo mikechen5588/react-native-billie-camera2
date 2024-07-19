@@ -53,5 +53,18 @@
             android:theme="@style/Theme.Billie"
             tools:ignore="LockedOrientationActivity">
         </activity>
+        <activity
+            android:theme="@style/TransparencyTheme"
+            android:name="com.billiecamera.camera.CropPictureActivity"/>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.billiecamera.fileprovider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
     </application>
 </manifest>

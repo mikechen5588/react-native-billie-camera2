@@ -1,6 +1,8 @@
 package com.billiecamera
 
 import com.billiecamera.camera.CameraActivity
+import com.billiecamera.camera.CropPictureActivity
+import com.billiecamera.camera.view.ButtonState
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
@@ -20,12 +22,25 @@ class BillieCameraModule(reactContext: ReactApplicationContext) :
    */
   @ReactMethod
   fun startCamera(enableVideo:Int, promise: Promise) {
-    println("open the camera open the camera open the camera")
     val activity = currentActivity ?: return
-    println("open the camera open the camera open the camera111")
     CameraActivity.startCamera(activity, enableVideo) {
       // return value
       promise.resolve(it)
+    }
+  }
+
+  /**
+   * select avatar
+   */
+  @ReactMethod
+  fun chooseAvatar(width:Int, height:Int, promise: Promise) {
+    val activity = currentActivity ?: return
+    CameraActivity.startCamera(activity, ButtonState.BUTTON_STATE_ONLY_CAPTURE.status) {
+      // return value
+      // to crop image
+      CropPictureActivity.startCamera(activity, it, width, height) {crop ->
+        promise.resolve(crop)
+      }
     }
   }
 

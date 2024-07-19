@@ -4,22 +4,18 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.billiecamera.R
+import com.billiecamera.camera.handler.ImagePickHandler
 import com.billiecamera.camera.listener.ClickListener
 import com.billiecamera.camera.listener.FlowCameraListener
-import com.billiecamera.camera.utils.FileUtils
 import com.billiecamera.camera.view.ButtonState
 import com.billiecamera.camera.view.CaptureButton.Companion.BUTTON_STATE_BOTH
 import com.billiecamera.camera.view.CaptureButton.Companion.BUTTON_STATE_ONLY_CAPTURE
-import com.billiecamera.camera.view.CaptureButton.Companion.BUTTON_STATE_ONLY_RECORDER
 import com.billiecamera.camera.view.ResModel
 import com.billiecamera.databinding.CameraActivityBinding
 import com.google.gson.Gson
@@ -53,6 +49,12 @@ class CameraActivity  : AppCompatActivity() {
      * can capture video
      */
     private var videoEnable = 0
+
+    // image pic
+    private var imagePickHandler = ImagePickHandler(this) {
+        resModel = it
+        callResult()
+    }
 
     private val placeView:FrameLayout by lazy {
         FrameLayout(this@CameraActivity).apply {
@@ -101,7 +103,7 @@ class CameraActivity  : AppCompatActivity() {
 
         setImmersionBar()
         // capture model
-        videoEnable = intent.getIntExtra(videoEnableKey, BUTTON_STATE_BOTH)
+        videoEnable = intent.getIntExtra(videoEnableKey, BUTTON_STATE_ONLY_CAPTURE)
 
         setContentView(placeView)
 
@@ -182,7 +184,7 @@ class CameraActivity  : AppCompatActivity() {
         })
         binding.flowCamera.setGalleryClickListener(object : ClickListener {
             override fun onClick() {
-                openGallery()
+                imagePickHandler.openGallery(videoEnable)
             }
         })
     }
@@ -202,87 +204,6 @@ class CameraActivity  : AppCompatActivity() {
         super.onDestroy()
         hasOpenCamera = false
         callBack = null
-    }
-
-    /**
-     * open Gallery
-     */
-    private fun openGallery() {
-        XXPermissions.with(this)
-            .permission(Permission.READ_MEDIA_VISUAL_USER_SELECTED)
-            .permission(Permission.READ_MEDIA_VIDEO)
-            .permission(Permission.READ_MEDIA_IMAGES)
-            .request(object : OnPermissionCallback {
-                override fun onGranted(permissions: MutableList<String>, allGranted: Boolean) {
-                    if (allGranted) {
-                        val intent = Intent(Intent.ACTION_PICK)
-                        when (videoEnable) {
-                            BUTTON_STATE_BOTH -> {
-                                intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/* video/*")
-                            }
-                            BUTTON_STATE_ONLY_RECORDER -> {
-                                intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "video/*")
-                            }
-                            else -> {
-                                intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*")
-                            }
-                        }
-                        getContent.launch(intent)
-                    } else {
-                        // not all grand
-                        Toast.makeText(this@CameraActivity,
-                            "request camera permission", Toast.LENGTH_LONG).show()
-                    }
-                }
-
-                override fun onDenied(permissions: MutableList<String>, doNotAskAgain: Boolean) {
-                    if (doNotAskAgain) {
-                        // 如果是被永久拒绝就跳转到应用权限系统设置页面
-                        XXPermissions.startPermissionActivity(this@CameraActivity, permissions)
-                    } else {
-                        // not all grand
-                        Toast.makeText(this@CameraActivity,
-                            "request camera permission", Toast.LENGTH_LONG).show()
-                    }
-                }
-            })
-    }
-
-    /**
-     * get video or image result
-     */
-    private val getContent = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-        if (result.resultCode != Activity.RESULT_OK) {
-            return@registerForActivityResult
-        }
-        lifecycleScope.launch(Dispatchers.IO) {
-            val resultIntent = result.data
-            resModel = ResModel()
-            if(result.data?.type?.contains("video") == true) {
-                // read video info
-                FileUtils.getMediaInfo(this@CameraActivity, resModel!!, resultIntent?.data)
-            } else if(result.data?.type?.contains("image") == true) {
-                // read picture info
-                FileUtils.getImageInfo(this@CameraActivity, resModel!!, resultIntent?.data)
-            }
-
-            // 显示toast
-            if(resModel?.uri == null) {
-                launch(Dispatchers.Main) {
-                    Toast.makeText(this@CameraActivity,
-                        "type = ${result.data?.type}, uri = ${result.data?.data}", Toast.LENGTH_LONG).show()
-                }
-            }
-
-            println("resModel = " + resModel?.uri)
-
-            // select null file
-            if(resModel?.uri == null) {
-                return@launch
-            }
-            callResult()
-        }
     }
 
     private fun callResult() {
