@@ -48,3 +48,5 @@ yarn-error.*
 
 modules/
 modules/billie-camera222
+
+**/.gradle/**
