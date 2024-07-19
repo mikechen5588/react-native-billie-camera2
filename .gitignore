@@ -15,8 +15,6 @@ web-build/
 *.p12
 *.key
 *.mobileprovision
-ios/
-android/
 
 # Metro
 .metro-health-check*
@@ -44,12 +42,9 @@ yarn-error.*
 
 *.psd
 
-./android
 **/node_modules/**
 
 **/build/**
-
-android11
 
 modules/
 modules/billie-camera222
